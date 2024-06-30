@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:gps_receiver/sample_data.dart';
 import 'package:gps_receiver/user_config.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -129,5 +130,15 @@ class Services {
         await RawDatagramSocket.bind(InternetAddress.anyIPv4, 5006);
     udpSocket.send(utf8.encode(message), InternetAddress(address), 5005);
     udpSocket.close();
+  }
+
+  Future<List<Map<String, dynamic>>> getActiveAGVs() async {
+    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
+    return availableAGVs;
+  }
+
+  Future<List<Map<String, dynamic>>> getActiveProjects() async {
+    await Future.delayed(const Duration(seconds: 1)); // Simulate network delay
+    return activeProjects;
   }
 }

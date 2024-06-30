@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:gps_receiver/project_setup_dialog.dart';
 import 'package:gps_receiver/project_widget.dart';
 
 class LandingPage extends StatefulWidget {
@@ -89,12 +90,6 @@ class _LandingPageState extends State<LandingPage> {
     // Example: Update map markers or perform other operations
   }
 
-  void _handleProjectWidgetClose() {
-    setState(() {
-      _isProjectOpen = false;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -125,27 +120,30 @@ class _LandingPageState extends State<LandingPage> {
                   }
                 : <Polyline>{},
           ),
-          if (_isProjectOpen)
-            GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: _toggleProjectContainer,
-              child: Container(
-                color: Colors.black.withOpacity(0.6),
-              ),
-            ),
           AnimatedPositioned(
             duration: const Duration(milliseconds: 300),
             curve: Curves.easeInOut,
             top: MediaQuery.of(context).size.height * 0.05,
             right: _isProjectOpen
                 ? MediaQuery.of(context).size.width * 0.05
-                : -400,
-            child: AnimatedOpacity(
-              opacity: _isProjectOpen ? 1.0 : 0.0,
-              duration: const Duration(milliseconds: 300),
+                : -MediaQuery.of(context).size.width * 0.35, // Move off-screen
+            child: Container(
+              width: 400,
+              height: 200,
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 10,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
               child: ProjectWidget(
                 onSetupComplete: _handleProjectSetupComplete,
-                onClose: _handleProjectWidgetClose, // Pass the onClose callback
+                onClose: _toggleProjectContainer,
               ),
             ),
           ),
@@ -153,12 +151,14 @@ class _LandingPageState extends State<LandingPage> {
             top: MediaQuery.of(context).size.height * 0.05,
             right: MediaQuery.of(context).size.width * 0.05,
             child: GestureDetector(
-              behavior: HitTestBehavior.opaque,
               onTap: _toggleProjectContainer,
-              child: Icon(
-                _isProjectOpen ? Icons.close : Icons.settings,
-                size: 30,
-                color: _isProjectOpen ? Colors.red : Colors.black,
+              child: AnimatedRotation(
+                turns: _isProjectOpen ? 0.25 : 0,
+                duration: const Duration(milliseconds: 300),
+                child: Icon(_isProjectOpen ? Icons.close : Icons.settings,
+                    size: 30,
+                    // color: Theme.of(context).iconTheme.color,
+                    color: _isProjectOpen ? Colors.red : Colors.black),
               ),
             ),
           ),
