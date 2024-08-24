@@ -1,15 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:gps_receiver/landing_page.dart';
+import 'package:gps_receiver/location_provider.dart';
 import 'package:gps_receiver/login_screen.dart';
 import 'package:gps_receiver/profile_drawer.dart';
-import 'package:gps_receiver/reports_page.dart';
+import 'package:gps_receiver/params_page.dart';
 import 'package:gps_receiver/services.dart';
 import 'package:gps_receiver/vehicles_page.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   bool isLoggedIn = await Services.isUserAlreadyLoggedIn();
-  runApp(MyApp(isLoggedIn: isLoggedIn));
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => LocationProvider(),
+      child: MyApp(isLoggedIn: isLoggedIn),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -62,7 +69,7 @@ class _MainScreenState extends State<MainScreen> {
   static final List<Widget> _widgetOptions = <Widget>[
     const LandingPage(),
     const VehiclesPage(),
-    const ReportsPage(),
+    const ParamsPage(),
   ];
 
   void _onItemTapped(int index) {

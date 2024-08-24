@@ -36,11 +36,12 @@ class Services {
 
   static Future<void> saveIP(String ip) async {
     final prefs = await SharedPreferences.getInstance();
-    List<String> ips = prefs.getStringList(ipKey) ?? [];
-    if (!ips.contains(ip)) {
-      ips.add(ip);
-      prefs.setStringList(ipKey, ips);
-    }
+    prefs.setString(ipKey, ip);
+    // List<String> ips = prefs.getStringList(ipKey) ?? [];
+    // if (!ips.contains(ip)) {
+    //   ips.add(ip);
+    //   prefs.setStringList(ipKey, ips);
+    // }
   }
 
   static bool isUsernameAndPasswordValid(String username, String password) {
@@ -89,11 +90,24 @@ class Services {
   }
 
   static Future<http.Response> getRequest(String endpoint) async {
+    print('inside getRequest line 92');
     final prefs = await SharedPreferences.getInstance();
+
+    final keys = prefs.getKeys();
+
+    final prefsMap = Map<String, dynamic>();
+    for (String key in keys) {
+      prefsMap[key] = prefs.get(key);
+    }
+
+    print(prefsMap);
     String? serverIp = prefs.getString(ipKey);
 
-    final url = Uri.http(serverIp!, endpoint);
+    final url = Uri.http('${serverIp!}:8222', endpoint);
+
     final response = await http.get(url);
+    print('inside getRequest');
+    print(response.body);
     return response;
   }
 
@@ -102,9 +116,33 @@ class Services {
     final prefs = await SharedPreferences.getInstance();
     String? serverIp = prefs.getString(ipKey);
 
-    final url = Uri.http(serverIp!, endpoint);
+    final url = Uri.http('${serverIp!}:8222', endpoint);
     final response = await http.post(url,
         headers: {'Content-Type': 'application/json'}, body: jsonEncode(body));
+    return response;
+  }
+
+  static Future<http.Response> putRequest(
+      String endpoint, Map<String, dynamic> body) async {
+    final prefs = await SharedPreferences.getInstance();
+    String? serverIp = prefs.getString(ipKey);
+    print('I am inside putRequest on services');
+    final url = Uri.http('${serverIp!}:8222', endpoint);
+    final response = await http.put(url,
+        headers: {'Content-Type': 'application/json'}, body: jsonEncode(body));
+    print(response.body);
+    return response;
+  }
+
+  static Future<http.Response> patchRequest(
+      String endpoint, Map<String, dynamic> body) async {
+    final prefs = await SharedPreferences.getInstance();
+    String? serverIp = prefs.getString(ipKey);
+    print('I am inside putRequest on services');
+    final url = Uri.http('${serverIp!}:8222', endpoint);
+    final response = await http.patch(url,
+        headers: {'Content-Type': 'application/json'}, body: jsonEncode(body));
+    print(response.body);
     return response;
   }
 
@@ -123,6 +161,15 @@ class Services {
   //     });
   //   });
   // }
+  static Future<void> setCurrentProject(String projectName) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('current_project', projectName);
+  }
+
+  static Future<String?> getCurrentProject() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('current_project');
+  }
 
   static Future<void> sendUDP(String message, String address, int port) async {
     print('inside sendudp');
