@@ -31,11 +31,12 @@ class _ProjectSetupDialogState extends State<ProjectSetupDialog> {
   @override
   void initState() {
     super.initState();
-    _getActiveProjects().then((_) {
-      if (_selectedProject != null) {
-        _fetchAndSetSelectedProjectAGVs();
-      }
-    });
+    _getActiveProjects();
+    // .then((_) {
+    //   if (_selectedProject != null) {
+    //     _fetchAndSetSelectedProjectAGVs();
+    //   }
+    // });
     _getActiveAGVs();
   }
 
@@ -56,6 +57,7 @@ class _ProjectSetupDialogState extends State<ProjectSetupDialog> {
           print('Available Projects: $_availableProjects');
           _selectedProject =
               _availableProjects.isNotEmpty ? _availableProjects.first : null;
+          _fetchAndSetSelectedProjectAGVs();
         });
       } else {
         // Handle error
@@ -68,7 +70,8 @@ class _ProjectSetupDialogState extends State<ProjectSetupDialog> {
   }
 
   Future<List<String>> _selectedProjectAGVs(String selectedProject) async {
-    final response = await Services.getRequest('/projects/$selectedProject');
+    final response =
+        await Services.getRequest('/projects/name/$selectedProject');
 
     if (response.statusCode == 200) {
       print('Project AGVs Response: ${response.body}');

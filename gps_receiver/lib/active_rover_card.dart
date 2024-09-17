@@ -53,7 +53,7 @@ class ActiveRoverCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        roverDetails.roverName,
+                        roverDetails.roverId,
                         style:
                             const TextStyle(color: Colors.white, fontSize: 22),
                       ),
@@ -62,9 +62,9 @@ class ActiveRoverCard extends StatelessWidget {
                         style: const TextStyle(color: Colors.red, fontSize: 16),
                       ),
                       Text(
-                        roverDetails.roverStatus,
+                        roverDetails.status,
                         style: TextStyle(
-                          color: roverDetails.roverStatus == 'ONLINE'
+                          color: roverDetails.status == 'ONLINE'
                               ? Colors.green
                               : Colors.red,
                           fontSize: 12,
@@ -76,7 +76,8 @@ class ActiveRoverCard extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        '${roverDetails.speed} km/h',
+                        // '${roverDetails.rosData.speed} km/h',
+                        "0 kmh",
                         style:
                             const TextStyle(color: Colors.blue, fontSize: 22),
                       ),

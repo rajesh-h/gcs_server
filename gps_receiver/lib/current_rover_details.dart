@@ -63,7 +63,7 @@ class CurrentRoverDetails extends StatelessWidget {
               ),
               const SizedBox(width: 8.0),
               Text(
-                roverDetails.roverName,
+                roverDetails.roverId,
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 22.0,
@@ -74,7 +74,7 @@ class CurrentRoverDetails extends StatelessWidget {
           ),
           const SizedBox(height: 4.0),
           Text(
-            roverDetails.roverStatus,
+            roverDetails.status,
             style: TextStyle(
               color: _getStatusColor(),
               fontSize: 16.0,
@@ -95,10 +95,10 @@ class CurrentRoverDetails extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildCircularIndicator(roverDetails.missionCompletionPercentage),
-          _buildVerticalIndicator('Battery', roverDetails.batteryPercentage),
-          _buildVerticalIndicator('Fuel', roverDetails.fuelPercentage),
-          _buildVerticalIndicator('Payload', roverDetails.payloadPercentage),
+          _buildCircularIndicator(roverDetails.missionProgress.taskCompletion),
+          _buildVerticalIndicator('Battery', roverDetails.sensorData.battery),
+          _buildVerticalIndicator('Fuel', roverDetails.sensorData.fuel),
+          _buildVerticalIndicator('Payload', roverDetails.sensorData.payload),
         ],
       ),
     );
@@ -110,11 +110,9 @@ class CurrentRoverDetails extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildStatusIcon(
-              'Temperature', Icons.thermostat, roverDetails.temperatureStatus),
-          _buildStatusIcon('Motors', Icons.settings, roverDetails.motorsStatus),
-          _buildStatusIcon(
-              'Sprayers', Icons.sanitizer, roverDetails.sprayersStatus),
+          _buildStatusIcon('Temperature', Icons.thermostat, true),
+          _buildStatusIcon('Motors', Icons.settings, false),
+          _buildStatusIcon('Sprayers', Icons.sanitizer, true),
         ],
       ),
     );
@@ -236,9 +234,9 @@ class CurrentRoverDetails extends StatelessWidget {
   }
 
   Color _getStatusColor() {
-    if (roverDetails.roverStatus == 'OFFLINE') {
+    if (roverDetails.status == 'OFFLINE') {
       return Colors.grey;
-    } else if (roverDetails.roverStatus == 'ALERT') {
+    } else if (roverDetails.status == 'ALERT') {
       return Colors.red;
     } else {
       return Colors.green;

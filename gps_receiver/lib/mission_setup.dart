@@ -59,7 +59,7 @@ class _MissionSetupState extends State<MissionSetup> {
     print('Update mission assigned: $missionId');
     try {
       final response = await Services.patchRequest(
-        'rovers/${widget.roverId}',
+        'rovers/available_rovers/${widget.roverId}',
         {'mission_assigned': missionId},
       );
 

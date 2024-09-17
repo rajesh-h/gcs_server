@@ -52,17 +52,37 @@ class _ProjectWidgetState extends State<ProjectWidget> {
           final roverResponse = await Services.getRequest('/rovers');
           if (roverResponse.statusCode == 200) {
             final List<dynamic> rovers = jsonDecode(roverResponse.body);
+            print('below is rovers');
+            print(rovers);
             setState(() {
               _roverDetailsList = rovers
                   .where((rover) => agvs.contains(rover['rover_id']))
-                  .map((rover) {
+                  .map<RoverDetails>((rover) {
+                print('Rover: $rover');
                 return RoverDetails(
-                  roverId: rover['rover_id'],
-                  roverName: rover['rover_id'] ?? 'Unknown',
+                  roverId: rover['rover_id'] ?? 'Unknown',
+                  lon: rover['lon'] ?? "0.0",
+                  lat: rover['lat'] ?? "0.0",
                   missionAssigned: rover['mission_assigned'] ?? 'N/A',
-                  roverStatus: rover['status'] ?? 'Unknown',
-                  speed:
-                      double.tryParse(rover['speed']?.toString() ?? '0') ?? 0,
+                  status: rover['status'] ?? 'Unknown',
+                  rosData: rover['ros_data'] != null
+                      ? RosData.fromJson(rover['ros_data'])
+                      : RosData(), // Default to empty object if null
+                  sensorData: rover['sensor_data'] != null
+                      ? SensorData.fromJson(rover['sensor_data'])
+                      : SensorData(),
+                  mission: rover['mission'] != null
+                      ? Mission.fromJson(rover['mission'])
+                      : Mission(), // Default to empty object if null
+                  missionProgress: rover['mission_progress'] != null
+                      ? MissionProgress.fromJson(rover['mission_progress'])
+                      : MissionProgress(), // Default to empty object if null
+                  completedPath: rover['completed_path'] != null
+                      ? CompletedPath.fromJson(rover['completed_path'])
+                      : CompletedPath(
+                          completedPath: [],
+                          roverId: rover['rover_id'] ??
+                              'Unknown'), // Default to empty path if null
                 );
               }).toList();
             });

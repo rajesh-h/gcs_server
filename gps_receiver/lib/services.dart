@@ -138,7 +138,7 @@ class Services {
       String endpoint, Map<String, dynamic> body) async {
     final prefs = await SharedPreferences.getInstance();
     String? serverIp = prefs.getString(ipKey);
-    print('I am inside putRequest on services');
+    print('I am inside patchRequest on services');
     final url = Uri.http('${serverIp!}:8222', endpoint);
     final response = await http.patch(url,
         headers: {'Content-Type': 'application/json'}, body: jsonEncode(body));

@@ -26,7 +26,7 @@ class _LandingPageState extends State<LandingPage> {
     super.initState();
   }
 
-  Future<void> _fetchMissionData(String roverId, String missionId) async {
+  Future<void> _fetchMissionData(String roverId) async {
     try {
       print('Fetching mission data...');
       if (_mapController == null) {
@@ -34,24 +34,51 @@ class _LandingPageState extends State<LandingPage> {
         return; // Exit if _mapController is not ready
       }
 
-      final response =
-          await Services.getRequest('rovers/$roverId/missions/$missionId');
+      final response = await Services.getRequest('rovers/$roverId');
       final data = jsonDecode(response.body);
-      print(data);
-      print('line 39');
 
       if (data != null) {
         print('Mission data fetched successfully.');
-        setState(() {
-          _startPoint =
-              LatLng(data['starting_point'][0], data['starting_point'][1]);
-          _path = List<LatLng>.from(data['path']
-              .map((coordinates) => LatLng(coordinates[0], coordinates[1])));
 
-          _completed_path = List<LatLng>.from(data['compleated']
-              .map((coordinates) => LatLng(coordinates[0], coordinates[1])));
+        // Parse data into RoverDetails
+        final roverDetails = RoverDetails(
+          roverId: data['rover_id'],
+          lon: data['lon'],
+          lat: data['lat'],
+
+          missionAssigned: data['mission_assigned'] ?? 'N/A',
+          status: data['status'] ?? 'Unknown',
+
+          rosData: RosData.fromJson(data['ros_data'] ?? {}),
+          sensorData: SensorData.fromJson(data['sensor_data'] ?? {}),
+          mission: data['mission'] != null
+              ? Mission.fromJson(data['mission'])
+              : Mission(),
+          missionProgress: data['mission_progress'] != null
+              ? MissionProgress.fromJson(data['mission_progress'])
+              : MissionProgress(), // Default to empty object
+          completedPath: data['completed_path'] != null
+              ? CompletedPath.fromJson(data['completed_path'])
+              : CompletedPath(
+                  completedPath: [],
+                  roverId: data['rover_id']), // Default to empty path
+        );
+
+        setState(() {
+          _startPoint = LatLng(roverDetails.mission.startingPoint[0],
+              roverDetails.mission.startingPoint[1]);
+
+          _path = roverDetails.mission.path
+              .map((coordinates) => LatLng(coordinates[0], coordinates[1]))
+              .toList();
+
+          _completed_path = roverDetails.completedPath.completedPath
+              .map((coordinates) => LatLng(coordinates[0], coordinates[1]))
+              .toList();
+
           print('Print Path : $_completed_path');
         });
+
         _moveToStartPoint();
       } else {
         print('No data found.');
@@ -89,7 +116,7 @@ class _LandingPageState extends State<LandingPage> {
 
   void _onSelectionChanged(RoverDetails roverDetails, bool isSelected) {
     if (isSelected && roverDetails.missionAssigned != 'N/A') {
-      _fetchMissionData(roverDetails.roverId, roverDetails.missionAssigned);
+      _fetchMissionData(roverDetails.roverId);
     } else {
       setState(() {
         _startPoint = _initialCenter;
